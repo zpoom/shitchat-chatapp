@@ -1,0 +1,21 @@
+.home {
+    width: 100vw;
+    height: 100vh;
+    background-color: #3b5998;
+    text-align: center;
+    padding: 10vh 15vw;
+}
+.home-content {
+    margin-top: 15vh;
+}
+.greeting-msg {
+    color: 	#f7f7f7;
+    font-family: Prompt;
+}
+.login-form{
+    width: 30vw;
+    text-align: center;
+    margin: 5vh auto;
+    font-family: Prompt;
+    color: #8b9dc3;
+}
