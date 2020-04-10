@@ -1,4 +1,4 @@
-# Real time chat application
+# Realtime chat application
 
 ## Members
 
