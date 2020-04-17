@@ -1,0 +1,16 @@
+.message-box {
+    color: black;
+    background-color: #f7f7f7;
+    padding: 0.6vh 0.9vw;
+    max-width: 10vw;
+    overflow-wrap: break-word;
+    margin-left: 20px;
+    margin-top: 10px;
+    border-radius: 3vw;
+    min-width: 5vw;
+}
+.mine{
+    background-color: #00C6FF;
+    color: white;
+
+}
