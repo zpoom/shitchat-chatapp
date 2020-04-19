@@ -1,0 +1,38 @@
+.lobby-table{
+    text-align: center;
+    font-family: Prompt;
+}
+.lobby-table-container {
+    margin-top: 5vh;
+}
+.lobby-title{
+    height: 5vh;
+    font-family: Prompt;
+    font-size: 16px;
+    text-align: center;
+    background-color: #4267b2;
+    padding: 0.1vh 0;
+    border-bottom-color:rgb(41, 72, 125);
+    border-bottom-style:solid;
+border-bottom-width:1px;
+}
+.lobby-title h1{
+    color: white;
+}
+.chat-room {
+    padding: 5px;
+    background-color: white;
+    border: #dfe3ee solid 1px;
+    height: 70vh;
+    scroll-behavior: smooth;
+    overflow-y: scroll;
+}
+.room-navbar {
+    background-color: #8b9dc3;
+    font-size: 24px;
+    font-family: Prompt;
+    color: white;
+}
+.myMessage {
+    margin-left: 39vw;
+}
