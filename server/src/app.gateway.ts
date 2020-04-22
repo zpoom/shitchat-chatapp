@@ -11,17 +11,23 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   private userService: UserService;
 
   @SubscribeMessage('msgToServer')
-  handleMessage(client: Socket, payload: string): void {
-    this.server.emit('msgToClient', payload);
+  handleMessage(client: Socket, payload: any): void {
+    const { username, message, groupname } = payload;
+    if (!username || !message || !groupname) throw new Error('Missing data')
+    const res = this.userService.sendMessage({ groupname, username, message });
+    this.server.emit('msgToClient', res);
   }
 
   @SubscribeMessage('join')
   handleJoinGroup(client: Socket, payload: any): void {
-    // const res = this.userService.joinGroup(payload.groupname, payload.username);
-    const res = `Connected ${payload.username} ${payload.groupname}`;
+    const { username, groupname } = payload;
+    if (!username || !groupname) throw new Error('Missing data')
+    const res = this.userService.joinGroup({ groupname, username });
+    // const res = `Connected ${username} ${groupname}`;
     this.server.emit('joined', res);
 
   }
+
   afterInit(server: Server) {
     this.logger.log('init');
   }

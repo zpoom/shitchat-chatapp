@@ -9,7 +9,7 @@ import { IGroup } from 'src/group/group.interface';
 export class UserService {
     constructor(@InjectModel('User') private User: Model<IUser>, @InjectModel('Group') private Group: Model<IGroup>) { }
 
-    async joinGroup(groupname: string, username: string) {
+    async joinGroup({ groupname, username }: any) {
         const u = await this.User.findOne({ username });
         if (!u) throw new Error('User not found')
         const group = await this.Group.findOne({ groupname: groupname });
@@ -32,10 +32,13 @@ export class UserService {
             return res;
         }
     }
-    async sendMessage(groupname: string, username: string, message: string) {
+    async sendMessage({ groupname, username, message }: any) {
         const group = await this.Group.findOne({ groupname: groupname });
         if (!group) throw new Error('Group not found');
-        group.messages.push({ username, message, timestamp: new Date() });
+        const res = { username, message, timestamp: new Date() }
+        group.messages.push(res);
+        await group.save();
+        return res;
     }
 
 }
