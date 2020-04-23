@@ -37,12 +37,18 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   }
 
   @SubscribeMessage('leave')
-  handleExitGroup(client: Socket, payload: any): void {
+  handleLeaveGroup(client: Socket, payload: any): void {
     const { username, groupname } = payload;
     if (!username || !groupname) throw new Error('Missing data')
     const res = this.userService.leaveGroup({ groupname, username });
-    this.activeClients[client.id] = payload;
+    delete this.activeClients[client.id];
     this.server.emit('leaved', res);
+  }
+
+  @SubscribeMessage('test')
+  handleTest(client: Socket, payload: any): void {
+    const res = payload;
+    this.server.emit('test success', res);
   }
 
   afterInit(server: Server) {
