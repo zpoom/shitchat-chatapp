@@ -40,5 +40,17 @@ export class UserService {
         await group.save();
         return res;
     }
+    async temporaryLeaveGroup({ groupname, username }: any) {
+        const group = await this.Group.findOne({ groupname });
+        if (!group) throw new Error('Group not found');
+        const leavingUser = await this.User.findOne({ username });
+        for (let idx in leavingUser.lastestReadTime) {
+            if (leavingUser.lastestReadTime[idx].groupname === groupname) {
+                leavingUser.lastestReadTime[idx].timestamp = new Date();
+                break;
+            }
+        }
+        await leavingUser.save();
+    }
 
 }
