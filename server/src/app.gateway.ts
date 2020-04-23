@@ -5,11 +5,19 @@ import { UserService } from './user/user.service';
 
 @WebSocketGateway()
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  constructor(
+    private userService: UserService
+  ) {}
 
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('AppGateway');
-  private userService: UserService;
-
+  private activeClients: { 
+    [clientId: string]: { 
+      usernname: string,
+      groupname: string
+    } 
+  } = {};
+  
   @SubscribeMessage('msgToServer')
   handleMessage(client: Socket, payload: any): void {
     const { username, message, groupname } = payload;
@@ -23,6 +31,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     const { username, groupname } = payload;
     if (!username || !groupname) throw new Error('Missing data')
     const res = this.userService.joinGroup({ groupname, username });
+    this.activeClients[client.id] = payload;
     // const res = `Connected ${username} ${groupname}`;
     this.server.emit('joined', res);
 
@@ -34,6 +43,8 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
+    this.userService.temporaryLeaveGroup(this.activeClients[client.id]);
+    delete this.activeClients[client.id];
   }
 
   handleConnection(client: Socket, ...args: any[]) {
