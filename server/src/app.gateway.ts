@@ -5,11 +5,13 @@ import { UserService } from './user/user.service';
 
 @WebSocketGateway()
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  constructor(
+    private userService: UserService
+  ) {}
 
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('AppGateway');
-  private userService: UserService;
-
+  
   @SubscribeMessage('msgToServer')
   handleMessage(client: Socket, payload: any): void {
     const { username, message, groupname } = payload;
