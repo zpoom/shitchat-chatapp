@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Row, Col, Form, Input, Button } from 'antd';
 import './index.css';
-import { dummyGroup } from '../../const';
+import { dummyGroup , dummyMessage } from '../../const';
 import { Message } from '../../components';
 import { useForm } from 'antd/lib/form/util';
 const { Column } = Table;
@@ -20,9 +20,10 @@ export default () => {
     const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
     const [messages, setMessages] = useState<Array<IMessage>>([]);
     const [form] = Form.useForm();
-    useEffect(() => {
+    useEffect(() => { 
         setAllGroups(dummyGroup);
         setMyGroups(dummyGroup);
+        setMessages(dummyMessage)
     }, [])
     const sendMessage = (values: any) => {
         console.log(values);
