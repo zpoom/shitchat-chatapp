@@ -1,7 +1,7 @@
 import { IUser } from 'src/user/user.interface';
 
 export class CreateGroupDto {
-    name: String;
-    members: [IUser['name']];
-    messages: [{ username: IUser['name'], timestamp: Date, message: String }];
+  groupname: String;
+  members: [IUser['username']];
+  messages: [{ username: IUser['username'], timestamp: Date, message: String }];
   }
