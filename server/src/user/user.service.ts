@@ -4,11 +4,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { IGroup } from 'src/group/group.interface';
+import {CreateUserDto} from './create-user.dto';
 
 @Injectable()
 export class UserService {
     constructor(@InjectModel('User') private User: Model<IUser>, @InjectModel('Group') private Group: Model<IGroup>) { }
 
+    async createUser(createUserDto: CreateUserDto): Promise<IUser> {
+        const user = new this.User(createUserDto);
+        return await user.save();
+    }
+   
     async joinGroup({ groupname, username }: any) {
         const u = await this.User.findOne({ username });
         if (!u) throw new Error('User not found')
