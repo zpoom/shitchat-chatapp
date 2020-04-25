@@ -4,6 +4,7 @@ import './index.css';
 import { dummyGroup , dummyMessage } from '../../const';
 import { Message } from '../../components';
 import { useForm } from 'antd/lib/form/util';
+import io from 'socket.io-client';
 const { Column } = Table;
 
 interface IGroup {
@@ -20,17 +21,22 @@ export default () => {
     const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
     const [messages, setMessages] = useState<Array<IMessage>>([]);
     const [form] = Form.useForm();
+    const socket = io('http://localhost:8080');
     useEffect(() => { 
         setAllGroups(dummyGroup);
         setMyGroups(dummyGroup);
         setMessages(dummyMessage)
     }, [])
+
     const sendMessage = (values: any) => {
         console.log(values);
         // TODO emit message to this group
         setMessages(messages.concat([{ message: values.msg, sender: 'me' }]));
         form.resetFields();
         form.scrollToField(['msg'])
+        socket.on('message', (res: any) => {
+            console.log(res);
+          });
     }
     return (
         <div>

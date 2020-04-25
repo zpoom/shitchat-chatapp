@@ -30,7 +30,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   handleJoinGroup(client: Socket, payload: any): void {
     const { username, groupname } = payload;
     if (!username || !groupname) throw new Error('Missing data')
-    const res = this.userService.joinGroup({ groupname, username });
+    const res = this.userService.joinGroup( groupname, username );
     this.activeClients[client.id] = payload;
     // const res = `Connected ${username} ${groupname}`;
     this.server.emit('joined', res);
@@ -59,8 +59,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.logger.log(`Client connected: ${client.id}`);
   }
 
-  // @SubscribeMessage('message')
-  // handleMessage(client: any, payload: any): string {
-  //   return 'Hello world!';
-  // }
+  @SubscribeMessage('aaa')
+  handMessage(client: any, payload : any): void {
+    this.server.emit('message');
+  }
 }
+ 

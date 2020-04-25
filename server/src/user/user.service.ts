@@ -20,7 +20,7 @@ export class UserService {
         if (!group) throw new Error('Group not found');
         if (!user) {
             // Never join group
-            group.members.push(username);
+            group.members.push(userId);
             await group.save();
             return [];
         }

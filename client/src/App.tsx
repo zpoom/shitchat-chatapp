@@ -8,12 +8,13 @@ import io from 'socket.io-client';
 function App() {
 
   const socket = io('http://localhost:8080');
-  socket.on('joined', (res: any) => {
+  socket.on('message', (res: any) => {
     console.log(res);
-  });
+  }); 
   const handleJoinGroup = () => {
     socket.emit('join', { groupname: 'test', username: 'test' });
   }
+  socket.emit('aaa')
 
   return (
     <div className="App">
