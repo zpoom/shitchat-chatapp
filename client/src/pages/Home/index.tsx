@@ -3,9 +3,11 @@ import "./index.css";
 import { Form, Input, Button } from "antd";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
-export default () => {
-  const history = useHistory();
+import io from 'socket.io-client';
 
+export default () => {
+  const history = useHistory()
+  const socket = io('http://localhost:8080');
   const submitForm = (values: any) => {
     console.log(values);
     let data = { name: values, latestReadTime: [] };

@@ -8,11 +8,17 @@ import io from 'socket.io-client';
 function App() {
 
   const socket = io('http://localhost:8080');
+  
+  const handleJoinGroup = () => {
+    socket.emit('join', { groupname: 'test', username: 'test' });
+  }
   socket.on('join', function(){});
-  socket.on('joined', function(){});
+  socket.on('joined', (res: any) => {
+      console.log(res);
+    });
   socket.on('leave group', function(){});
   socket.on('exit', function(){});
-
+  
   return (
     <div className="App">
       <BrowserRouter>
