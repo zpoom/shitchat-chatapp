@@ -10,7 +10,7 @@ export default () => {
     console.log(values);
     let data = { name: values, latestReadTime: [] };
     axios
-      .put("http://localhost:3000/user", data)
+      .put("http://localhost:8080/user", data)
       .then((res) => {
         console.log(res); 
         history.push("/lobby");
