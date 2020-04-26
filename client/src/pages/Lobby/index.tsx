@@ -40,10 +40,12 @@ export default (value:any) => {
     form.resetFields();
     form.scrollToField(["msg"]);
   };
+
   const createGroup = (value:any) => {
-    console.log(value.groupName);
+    let form =  {groupname:value.groupName,member:[username],messages:[]}
+    console.log(form);
     axios
-    .put("http://localhost:8080/group", {groupname:value.groupName,member:[],messages:[]})
+    .put("http://localhost:8080/group",form)
     .then((res) => {
       console.log(res); 
     })
