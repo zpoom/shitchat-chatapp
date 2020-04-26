@@ -23,7 +23,9 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Switch>
-          <Route path='/lobby' exact component={Lobby} />
+          <Route path='/lobby'>
+            <Lobby/>
+          </Route>
           <Route path='/' exact component={Home} />
         </Switch>
       </BrowserRouter>

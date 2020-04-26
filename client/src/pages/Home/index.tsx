@@ -2,6 +2,7 @@ import React from "react";
 import "./index.css";
 import { Form, Input, Button } from "antd";
 import { useHistory } from "react-router-dom";
+
 import axios from "axios";
 import io from 'socket.io-client';
 
@@ -9,13 +10,14 @@ export default () => {
   const history = useHistory()
   const socket = io('http://localhost:8080');
   const submitForm = (values: any) => {
-    console.log(values);
-    let data = { name: values, latestReadTime: [] };
+    var date = new Date();
+    let data = { name: values, latestReadTime: [date] };
     axios
       .put("http://localhost:8080/user", data)
       .then((res) => {
         console.log(res); 
-        history.push("/lobby");
+        history.push({pathname: '/lobby',
+        state: String(values.name).toString()});
       })
       .catch((err) => {
         console.log(err);

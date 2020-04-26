@@ -5,7 +5,10 @@ import { dummyGroup, dummyMessage } from "../../const";
 import { Message } from "../../components";
 import { useForm } from "antd/lib/form/util";
 import axios from 'axios'
+import { useLocation } from "react-router-dom";
+
 const { Column } = Table;
+const queryString = require('query-string');
 
 interface IGroup {
   name: string;
@@ -16,16 +19,20 @@ interface IMessage {
   sender: string;
 }
 
-export default () => {
+export default (value:any) => {
+  
+  const location = useLocation();
   const [allGroups, setAllGroups] = useState<Array<IGroup>>([]);
   const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
   const [messages, setMessages] = useState<Array<IMessage>>([]);
+  const [username, setUsername] = useState(location.state)
   const [form] = Form.useForm();
   useEffect(() => {
     setAllGroups(dummyGroup);
     setMyGroups(dummyGroup);
     setMessages(dummyMessage);
   }, []);
+
   const sendMessage = (values: any) => {
     console.log(values);
     // TODO emit message to this group
@@ -44,11 +51,13 @@ export default () => {
       console.log(err);
     });
   };
+ 
   return (
     <div>
       <Row className="lobby-title" justify="center">
         <h1>Shit-chat</h1>
       </Row>
+      <h2>Login as : {username}</h2>
       <Row className="lobby-table-container">
         <Col span={8} offset={1}>
           <h1 style={{ fontFamily: "Prompt" }}>All groups</h1>
