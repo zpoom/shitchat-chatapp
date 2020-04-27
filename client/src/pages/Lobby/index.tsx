@@ -4,12 +4,12 @@ import "./index.css";
 import { dummyGroup, dummyMessage } from "../../const";
 import { Message } from "../../components";
 import { useForm } from "antd/lib/form/util";
-import axios from 'axios'
+import axios from "axios";
 import { useLocation } from "react-router-dom";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 
 const { Column } = Table;
-const queryString = require('query-string');
+const queryString = require("query-string");
 
 interface IGroup {
   name: string;
@@ -20,48 +20,71 @@ interface IMessage {
   sender: string;
 }
 
-export default (value:any) => {
-
-  const socket = io('http://localhost:8080');
+export default (value: any) => {
+  const socket = io("http://localhost:8080");
   const location = useLocation();
   const [allGroups, setAllGroups] = useState<Array<IGroup>>([]);
   const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
   const [messages, setMessages] = useState<Array<IMessage>>([]);
-  const [username, setUsername] = useState(location.state)
+  const [username, setUsername] = useState(location.state);
   const [form] = Form.useForm();
   useEffect(() => {
-    setAllGroups(dummyGroup);
-    setMyGroups(dummyGroup);
     setMessages(dummyMessage);
+    getAllgroup();
+    getMygroup();
   }, []);
-
+  const getMygroup = () => {
+    axios.get("http://localhost:8080/group/" + username).then((res) => {
+      console.log(res);
+      setMyGroups(res.data);
+    });
+  };
+  const getAllgroup = () => {
+    axios.get("http://localhost:8080/group").then((res) => {
+      console.log(res);
+      setAllGroups(res.data);
+    });
+  };
   const sendMessage = (values: any) => {
-    console.log(values);
+    console.log(values.msg);
     // TODO emit message to this group
     setMessages(messages.concat([{ message: values.msg, sender: "me" }]));
     form.resetFields();
     form.scrollToField(["msg"]);
-    socket.emit('msgToServer', {username: username ,message: String(value).toString(),groupname: 'group2' });
-  };
-
-  const createGroup = (value:any) => {
-    let form =  {groupname:value.groupName,members:[username],messages:[]}
-    console.log(form);
-    axios
-    .put("http://localhost:8080/group",form)
-    .then((res) => {
-      console.log(res); 
-    })
-    .catch((err) => {
-      console.log(err);
+    socket.emit("msgToServer", {
+      username: username,
+      message: values.msg,
+      groupname: "group2",
     });
   };
-  socket.on('msgToClient', function(data:any){console.log(data)});
- 
+
+  const createGroup = (value: any) => {
+    let form = {
+      groupname: value.groupName,
+      members: [username],
+      messages: [],
+    };
+    console.log(form);
+    axios
+      .put("http://localhost:8080/group", form)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  socket.on("msgToClient", function (data: any) {
+    console.log(data);
+  });
+
   return (
     <div>
       <Row className="lobby-title" justify="center">
         <h1>Shit-chat</h1>
+        <Button size="middle" type="primary" onClick={getAllgroup} block>
+          Get
+        </Button>
       </Row>
       <h2>Login as : {username}</h2>
       <Row className="lobby-table-container">
@@ -78,7 +101,7 @@ export default (value:any) => {
               >
                 <Column
                   title="Name"
-                  dataIndex="name"
+                  dataIndex="groupname"
                   key="groupName"
                   align="center"
                   ellipsis
@@ -115,7 +138,7 @@ export default (value:any) => {
               >
                 <Column
                   title="Name"
-                  dataIndex="name"
+                  dataIndex="groupname"
                   key="groupName"
                   align="center"
                 />

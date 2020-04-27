@@ -11,7 +11,7 @@ export default () => {
   const socket = io('http://localhost:8080');
   const submitForm = (values: any) => {
     var date = new Date();
-    let data = { name: values, latestReadTime: [{groupname:"test",timestamp:date}] };
+    let data = { name: values, latestReadTime: [] };
     axios
       .put("http://localhost:8080/user", data)
       .then((res) => {
