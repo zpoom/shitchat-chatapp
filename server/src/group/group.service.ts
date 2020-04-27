@@ -12,4 +12,17 @@ export class GroupService {
         const group = new this.GroupModel(createGroupDto);
         return await group.save();
     }
+
+    async getJoinedGroup(name:any) {
+         return await this.GroupModel.find({members: name});
+    }
+
+    async getNotJoinedGroup(name:any) {
+        return await this.GroupModel.find({members: {$ne:name}});
+    }
+
+    async getAllGroup(){
+        return await this.GroupModel.find({});
+    }
+
 }
