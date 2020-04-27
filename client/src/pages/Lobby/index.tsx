@@ -6,6 +6,7 @@ import { Message } from "../../components";
 import { useForm } from "antd/lib/form/util";
 import axios from 'axios'
 import { useLocation } from "react-router-dom";
+import io from 'socket.io-client';
 
 const { Column } = Table;
 const queryString = require('query-string');
@@ -20,7 +21,8 @@ interface IMessage {
 }
 
 export default (value:any) => {
-  
+
+  const socket = io('http://localhost:8080');
   const location = useLocation();
   const [allGroups, setAllGroups] = useState<Array<IGroup>>([]);
   const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
@@ -39,10 +41,11 @@ export default (value:any) => {
     setMessages(messages.concat([{ message: values.msg, sender: "me" }]));
     form.resetFields();
     form.scrollToField(["msg"]);
+    socket.emit('msgToServer', {username: username ,message: String(value).toString(),groupname: 'group2' });
   };
 
   const createGroup = (value:any) => {
-    let form =  {groupname:value.groupName,member:[username],messages:[]}
+    let form =  {groupname:value.groupName,members:[username],messages:[]}
     console.log(form);
     axios
     .put("http://localhost:8080/group",form)
@@ -53,6 +56,7 @@ export default (value:any) => {
       console.log(err);
     });
   };
+  socket.on('msgToClient', function(data:any){console.log(data)});
  
   return (
     <div>
