@@ -12,8 +12,9 @@ const { Column } = Table;
 const queryString = require("query-string");
 
 interface IGroup {
-  name: string;
-  id: string;
+  groupname: String;
+  members: [String];
+  messages: [{ username: String; timestamp: Date; message: String }];
 }
 interface IMessage {
   message: string;
@@ -27,6 +28,7 @@ export default (value: any) => {
   const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
   const [messages, setMessages] = useState<Array<IMessage>>([]);
   const [username, setUsername] = useState(location.state);
+  const [currentGroup, setCurrentGroup] = useState<String>();
   const [form] = Form.useForm();
   useEffect(() => {
     setMessages(dummyMessage);
@@ -54,7 +56,7 @@ export default (value: any) => {
     socket.emit("msgToServer", {
       username: username,
       message: values.msg,
-      groupname: "group2",
+      groupname: currentGroup,
     });
   };
 
@@ -98,6 +100,12 @@ export default (value: any) => {
                 dataSource={allGroups}
                 pagination={false}
                 size="small"
+                onRow={(group) => ({
+                  onClick: (selectGroup) => {
+                    console.log(group.groupname);
+                    setCurrentGroup(group.groupname)
+                  },
+                })}
               >
                 <Column
                   title="Name"
