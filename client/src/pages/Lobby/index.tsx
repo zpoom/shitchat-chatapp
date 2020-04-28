@@ -15,6 +15,7 @@ interface IGroup {
   groupname: String;
   members: [String];
   messages: [{ username: String; timestamp: Date; message: String }];
+  action : String
 }
 interface IMessage {
   message: string;
@@ -38,12 +39,18 @@ export default (value: any) => {
   const getMygroup = () => {
     axios.get("http://localhost:8080/group/" + username).then((res) => {
       console.log(res);
+      res.data.forEach((element: any) => {
+        Object.assign(element,{action : "not join"})
+      });
       setMyGroups(res.data);
     });
   };
   const getAllgroup = () => {
     axios.get("http://localhost:8080/group").then((res) => {
       console.log(res);
+      res.data.forEach((element: any) => {
+        Object.assign(element,{action : "not join"})
+      });
       setAllGroups(res.data);
     });
   };
@@ -59,6 +66,26 @@ export default (value: any) => {
       groupname: currentGroup,
     });
   };
+  const joinGroup = (group:any) =>{
+    setCurrentGroup(group.groupname)
+    console.log(username)
+    socket.emit('join',{username : username , groupname : group.groupname})
+    allGroups.forEach(element => { 
+      if(element.groupname == group.groupname){
+        element.action = 'joining'
+      }else{
+        element.action = 'not join'
+      }
+    });
+    myGroups.forEach(element => {
+      if(element.groupname == group.groupname){
+        element.action = 'joining'
+      }else{
+        element.action = 'not join'
+      }
+    });
+   
+  }
 
   const createGroup = (value: any) => {
     let form = {
@@ -79,14 +106,14 @@ export default (value: any) => {
   socket.on("msgToClient", function (data: any) {
     console.log(data);
   });
+  socket.on("joinde", (data: any)=> {
+    console.log(data);
+  });
 
   return (
     <div>
       <Row className="lobby-title" justify="center">
         <h1>Shit-chat</h1>
-        <Button size="middle" type="primary" onClick={getAllgroup} block>
-          Get
-        </Button>
       </Row>
       <h2>Login as : {username}</h2>
       <Row className="lobby-table-container">
@@ -101,11 +128,8 @@ export default (value: any) => {
                 pagination={false}
                 size="small"
                 onRow={(group) => ({
-                  onClick: (selectGroup) => {
-                    console.log(group.groupname);
-                    setCurrentGroup(group.groupname)
-                  },
-                })}
+                  onClick: () => { joinGroup(group); }
+              })}
               >
                 <Column
                   title="Name"
@@ -143,6 +167,9 @@ export default (value: any) => {
                 className="lobby-table"
                 dataSource={myGroups}
                 pagination={false}
+                onRow={(group) => ({
+                  onClick: () => { joinGroup(group); }
+              })}
               >
                 <Column
                   title="Name"
