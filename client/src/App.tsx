@@ -17,14 +17,14 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Switch>
-          <Route path='/lobby'>
+          <Route path="/lobby">
             <Lobby />
           </Route>
-          <Route path='/' exact component={Home} />
+          <Route path="/" exact component={Home} />
         </Switch>
       </BrowserRouter>
     </div>
   );
 }
 
-export default App;  
+export default App;
