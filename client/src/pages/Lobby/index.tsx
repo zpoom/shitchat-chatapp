@@ -18,22 +18,23 @@ interface IGroup {
 }
 interface IMessage {
   message: string;
-  sender: string;
+  username: string;
+  timestamp : Date
 }
 const socket = io("http://localhost:8080", { transports: ['websocket'] });
 export default (value: any) => {
   const location = useLocation();
   const [allGroups, setAllGroups] = useState<Array<IGroup>>([]);
   const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
-  const [messages, setMessages] = useState<Array<IMessage>>([{ message: 'wtf', sender: 'wtf' }]);
+  const [messages, setMessages] = useState<Array<IMessage>>([]);
   const [username, setUsername] = useState(location.state);
   const [currentGroup, setCurrentGroup] = useState<String>();
   const messagesEndRef = useRef<HTMLDivElement>(document.createElement("div"));
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
 
-  const addMessage = ({ message, username }: { message: string, username: string }) => {
-    setMessages([...messages, { message, sender: username }]);
+  const addMessage = ({ message, username,timestamp }: { message: string, username: string,timestamp:Date }) => {
+    setMessages([...messages, { message, username: username,timestamp:timestamp }]);
   }
 
   const scrollToBottom = () => {
@@ -53,6 +54,7 @@ export default (value: any) => {
     })
     socket.off('joined').on('joined', (res: any) => {
       console.log(res);
+      setMessages(res)
     })
   })
 
@@ -71,11 +73,6 @@ export default (value: any) => {
     });
   };
   const sendMessage = (values: any) => {
-    // console.log(values.msg);
-    // TODO emit message to this group
-    // setMessages(messages.concat([{ message: values.msg, sender: "me" }]));
-    // form.resetFields();
-    // form.scrollToField(["msg"]);
     socket.emit("msgToServer", {
       username: username,
       message: values.msg,
@@ -86,6 +83,7 @@ export default (value: any) => {
     })
   };
   const joinGroup = (group: any) => {
+    console.log(group)
     socket.emit('join', { username: username, groupname: group.groupname })
     setCurrentGroup(group.groupname);
     socket.on('joined', (res: any) => {
@@ -211,11 +209,11 @@ export default (value: any) => {
         <Col span={12} offset={1}>
           <div className="chat-room">
             <Row className="room-navbar" justify="center">
-              {currentGroup}
+              GroupName : {currentGroup}
             </Row>
             {messages.map((m, idx) => (
-              <div className={`${m.sender === "me" ? "myMessage" : ""}`}>
-                <Message isMine={m.sender === username} key={idx} sender={m.sender}>
+              <div className={`${m.username === username ? "myMessage" : ""}`}>
+                <Message isMine={m.username === username} key={idx} sender={m.username}>
                   {m.message}
                 </Message>
               </div>
