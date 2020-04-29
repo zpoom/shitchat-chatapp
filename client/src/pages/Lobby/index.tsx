@@ -37,9 +37,6 @@ export default (value: any) => {
       console.log('res', res);
       setMessages(messages.concat([{ message: res.message, sender: res.username }]));
     })
-    socket.on('joined', (res: any) => {
-      console.log(res);
-    })
   }, []);
   const getMygroup = () => {
     axios.get("http://localhost:8080/group/" + username).then((res) => {
@@ -66,32 +63,29 @@ export default (value: any) => {
     });
   };
   const joinGroup = (group: any) => {
-    // console.log("join to :" + group.groupname)
-    // console.log(username)
-    // setCurrentGroup(group.groupname)
     socket.emit('join', { username: username, groupname: group.groupname })
     setCurrentGroup(group.groupname);
-
+    socket.on('joined', (res: any) => {
+      console.log(res);
+    })
   }
   const leaveGroup = (group: any) => {
     socket.emit('leave', { username: username, groupname: group.groupname })
   }
 
-  const createGroup = (value: any) => {
-    let form = {
+  const createGroup = async (value: any) => {
+    let groupPayload = {
       groupname: value.groupName,
-      members: [username],
+      members: [],
       messages: [],
     };
-    console.log(form);
-    axios
-      .put("http://localhost:8080/group", form)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    try {
+      await axios.put("http://localhost:8080/group", groupPayload);
+      getAllgroup();
+      getMygroup();
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div>
@@ -187,7 +181,7 @@ export default (value: any) => {
         <Col span={12} offset={1}>
           <div className="chat-room">
             <Row className="room-navbar" justify="center">
-              Room name
+              {currentGroup}
             </Row>
             {messages.map((m, idx) => (
               <div className={`${m.sender === "me" ? "myMessage" : ""}`}>

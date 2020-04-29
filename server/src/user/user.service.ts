@@ -11,7 +11,7 @@ export class UserService {
     constructor(@InjectModel('User') private User: Model<IUser>, @InjectModel('Group') private Group: Model<IGroup>) { }
 
     async createUser(createUserDto: CreateUserDto): Promise<IUser> {
-        const u = await this.User.findOne({ username: createUserDto.username });
+        const u = await this.User.findOne({ createUserDto});
         if (u) return u;
         else {
             const user = new this.User(createUserDto);
@@ -22,28 +22,28 @@ export class UserService {
     async joinGroup({ groupname, username }: any) {
         const user = await this.User.findOne({ username });
         if (!user) throw new Error('User not found')
-        const group = await this.Group.findOne({ groupname: groupname });
+        const group = await this.Group.findOne({ groupname });
         if (!group) throw new Error('Group not found');
         if (group.members.includes(username)) {
-            console.log('g1 has u1');
             // used to join
             // get messages since latest read = [{message: string, timestamp: Date, username: string}]
-            let latestRead = new Date();
-            for (let idx in user.lastestReadTime) {
-                if (user.lastestReadTime[idx].groupname === groupname) {
-                    latestRead = user.lastestReadTime[idx].timestamp;
+            let latestRead: Date = new Date();
+            for (let idx in user.latestReadTime) {
+                if (user.latestReadTime[idx].groupname === groupname) {
+                    latestRead = user.latestReadTime[idx].timestamp;
+                    break;
                 }
             }
-            const res = await this.Group.find({
-                'messages.timestamp': {
-                    $gte: latestRead
-                }
-            }, { groupname: 0, members: 0 })
-            return res;
+            const unreadMessages = group.messages.filter(g => g.timestamp > latestRead);
+            console.log(group);
+            console.log(unreadMessages);
+            return unreadMessages;
         } else {
             // never join
             group.members.push(username);
+            user.latestReadTime.push({ groupname, timestamp: new Date() });
             await group.save();
+            await user.save();
             return [];
         }
     }
@@ -60,9 +60,9 @@ export class UserService {
         const group = await this.Group.findOne({ groupname });
         if (!group) throw new Error('Group not found');
         const leavingUser = await this.User.findOne({ username });
-        for (let idx in leavingUser.lastestReadTime) {
-            if (leavingUser.lastestReadTime[idx].groupname === groupname) {
-                leavingUser.lastestReadTime[idx].timestamp = new Date();
+        for (let idx in leavingUser.latestReadTime) {
+            if (leavingUser.latestReadTime[idx].groupname === groupname) {
+                leavingUser.latestReadTime[idx].timestamp = new Date();
                 break;
             }
         }
