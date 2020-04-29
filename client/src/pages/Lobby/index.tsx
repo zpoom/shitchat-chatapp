@@ -60,24 +60,10 @@ export default (value: any) => {
     });
   };
   const joinGroup = (group:any) =>{
-    console.log(group.groupname)
-    setCurrentGroup(group.groupname)
+    console.log("join to :" + group.groupname)
     console.log(username)
+    setCurrentGroup(group.groupname)
     socket.emit('join',{username : username , groupname : group.groupname})
-    allGroups.forEach(element => { 
-      if(element.groupname == group.groupname){
-        element.action = 'joining'
-      }else{
-        element.action = 'not join'
-      }
-    });
-    myGroups.forEach(element => {
-      if(element.groupname == group.groupname){
-        element.action = 'joining'
-      }else{
-        element.action = 'not join'
-      }
-    });
    
   }
   const leaveGroup = (group:any) => {
