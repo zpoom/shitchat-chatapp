@@ -120,9 +120,6 @@ export default (value: any) => {
                 dataSource={allGroups}
                 pagination={false}
                 size="small"
-                onRow={(group) => ({
-                  onClick: () => { joinGroup(group); }
-                })}
               >
                 <Column
                   title="Name"
@@ -137,6 +134,11 @@ export default (value: any) => {
                   key="action"
                   align="center"
                   ellipsis
+                  render={(text, record) => (
+                    <div>
+                      <Button onClick={() => { joinGroup(record);}}>JOIN</Button>
+                    </div>
+                  )}
                 />
               </Table>
             </Col>
@@ -160,9 +162,6 @@ export default (value: any) => {
                 className="lobby-table"
                 dataSource={myGroups}
                 pagination={false}
-                onRow={(group) => ({
-                  onClick: () => { joinGroup(group); }
-                })}
               >
                 <Column
                   title="Name"
@@ -175,6 +174,12 @@ export default (value: any) => {
                   dataIndex="action"
                   key="action"
                   align="center"
+                  render={(text, record) => (
+                    <div>
+                      <Button onClick={() => { joinGroup(record);}}>JOIN</Button>
+                      <Button onClick={() => { leaveGroup(record);}}>LEAVE</Button>
+                    </div>
+                  )}
                 />
               </Table>
               <Form onFinish={(group) => joinGroup(group)} form={form2}>

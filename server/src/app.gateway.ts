@@ -45,7 +45,6 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     const { username, groupname } = payload;
     if (!username || !groupname) throw new Error('Missing data')
     const res = this.userService.leaveGroup({ groupname, username });
-    delete this.activeClients[client.id];
     this.server.emit('leaved', res);
   }
 
