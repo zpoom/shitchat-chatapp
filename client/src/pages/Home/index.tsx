@@ -8,22 +8,22 @@ import io from 'socket.io-client';
 
 export default () => {
   const history = useHistory()
-  const socket = io('http://localhost:8080');
   const submitForm = (values: any) => {
-    console.log(values.name)
     var date = new Date();
     let data = { username: values.name, latestReadTime: [] };
     axios
       .put("http://localhost:8080/user", data)
       .then((res) => {
-        console.log(res); 
-        history.push({pathname: '/lobby',
-        state: String(values.name).toString()});
+        console.log(res);
+        history.push({
+          pathname: '/lobby',
+          state: values.name
+        });
       })
       .catch((err) => {
         console.log(err);
       });
-   
+
   };
 
   return (

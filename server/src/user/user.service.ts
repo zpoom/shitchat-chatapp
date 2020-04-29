@@ -4,38 +4,47 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { IGroup } from 'src/group/group.interface';
-import {CreateUserDto} from './create-user.dto';
+import { CreateUserDto } from './create-user.dto';
 
 @Injectable()
 export class UserService {
     constructor(@InjectModel('User') private User: Model<IUser>, @InjectModel('Group') private Group: Model<IGroup>) { }
 
     async createUser(createUserDto: CreateUserDto): Promise<IUser> {
-        const user = new this.User(createUserDto);
-        return await user.save();
+        const u = await this.User.findOne({ username: createUserDto.username });
+        if (u) return u;
+        else {
+            const user = new this.User(createUserDto);
+            return await user.save();
+        }
     }
-   
+
     async joinGroup({ groupname, username }: any) {
-        const u = await this.User.findOne({ username });
-        if (!u) throw new Error('User not found')
+        const user = await this.User.findOne({ username });
+        if (!user) throw new Error('User not found')
         const group = await this.Group.findOne({ groupname: groupname });
-        const user = await this.User.findOne({ username: username, 'lastestReadTime.groupname': groupname });
         if (!group) throw new Error('Group not found');
-        if (!user) {
-            // Never join group
+        if (group.members.includes(username)) {
+            console.log('g1 has u1');
+            // used to join
+            // get messages since latest read = [{message: string, timestamp: Date, username: string}]
+            let latestRead = new Date();
+            for (let idx in user.lastestReadTime) {
+                if (user.lastestReadTime[idx].groupname === groupname) {
+                    latestRead = user.lastestReadTime[idx].timestamp;
+                }
+            }
+            const res = await this.Group.find({
+                'messages.timestamp': {
+                    $gte: latestRead
+                }
+            }, { groupname: 0, members: 0 })
+            return res;
+        } else {
+            // never join
             group.members.push(username);
             await group.save();
             return [];
-        }
-        else {
-            // join again
-            const lastestReadTime = user.lastestReadTime['timestamp'];
-            const res = this.Group.find({
-                'messages.timestamp': {
-                    $gte: lastestReadTime
-                }
-            }, { groupname: 0, members: 0, messages: 1 })
-            return res;
         }
     }
     async sendMessage({ groupname, username, message }: any) {

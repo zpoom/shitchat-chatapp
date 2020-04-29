@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Row, Col, Form, Input, Button } from "antd";
+import { Table, Row, Col, Form, Input, Button, message } from "antd";
 import "./index.css";
 import { dummyGroup, dummyMessage } from "../../const";
 import { Message } from "../../components";
@@ -20,9 +20,8 @@ interface IMessage {
   message: string;
   sender: string;
 }
-
+const socket = io("http://localhost:8080", { transports: ['websocket'] });
 export default (value: any) => {
-  const socket = io("http://localhost:8080");
   const location = useLocation();
   const [allGroups, setAllGroups] = useState<Array<IGroup>>([]);
   const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
@@ -31,9 +30,16 @@ export default (value: any) => {
   const [currentGroup, setCurrentGroup] = useState<String>();
   const [form] = Form.useForm();
   useEffect(() => {
-    setMessages(dummyMessage);
+    // setMessages(dummyMessage);
     getAllgroup();
     getMygroup();
+    socket.on('msgToClient', (res: any) => {
+      console.log('res', res);
+      setMessages(messages.concat([{ message: res.message, sender: res.username }]));
+    })
+    socket.on('joined', (res: any) => {
+      console.log(res);
+    })
   }, []);
   const getMygroup = () => {
     axios.get("http://localhost:8080/group/" + username).then((res) => {
@@ -48,11 +54,11 @@ export default (value: any) => {
     });
   };
   const sendMessage = (values: any) => {
-    console.log(values.msg);
+    // console.log(values.msg);
     // TODO emit message to this group
-    setMessages(messages.concat([{ message: values.msg, sender: "me" }]));
-    form.resetFields();
-    form.scrollToField(["msg"]);
+    // setMessages(messages.concat([{ message: values.msg, sender: "me" }]));
+    // form.resetFields();
+    // form.scrollToField(["msg"]);
     socket.emit("msgToServer", {
       username: username,
       message: values.msg,
@@ -60,10 +66,11 @@ export default (value: any) => {
     });
   };
   const joinGroup = (group: any) => {
-    console.log("join to :" + group.groupname)
-    console.log(username)
-    setCurrentGroup(group.groupname)
+    // console.log("join to :" + group.groupname)
+    // console.log(username)
+    // setCurrentGroup(group.groupname)
     socket.emit('join', { username: username, groupname: group.groupname })
+    setCurrentGroup(group.groupname);
 
   }
   const leaveGroup = (group: any) => {
@@ -189,7 +196,7 @@ export default (value: any) => {
             </Row>
             {messages.map((m, idx) => (
               <div className={`${m.sender === "me" ? "myMessage" : ""}`}>
-                <Message isMine key={idx}>
+                <Message isMine={m.sender === username} key={idx} sender={m.sender}>
                   {m.message}
                 </Message>
               </div>
