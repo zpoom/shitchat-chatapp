@@ -59,15 +59,15 @@ export default (value: any) => {
       groupname: currentGroup,
     });
   };
-  const joinGroup = (group:any) =>{
+  const joinGroup = (group: any) => {
     console.log("join to :" + group.groupname)
     console.log(username)
     setCurrentGroup(group.groupname)
-    socket.emit('join',{username : username , groupname : group.groupname})
-   
+    socket.emit('join', { username: username, groupname: group.groupname })
+
   }
-  const leaveGroup = (group:any) => {
-    socket.emit('leave',{username : username , groupname : group.groupname})
+  const leaveGroup = (group: any) => {
+    socket.emit('leave', { username: username, groupname: group.groupname })
   }
 
   const createGroup = (value: any) => {
@@ -103,9 +103,6 @@ export default (value: any) => {
                 dataSource={allGroups}
                 pagination={false}
                 size="small"
-                onRow={(group) => ({
-                  onClick: () => { joinGroup(group); }
-              })}
               >
                 <Column
                   title="Name"
@@ -120,6 +117,11 @@ export default (value: any) => {
                   key="action"
                   align="center"
                   ellipsis
+                  render={(text, record) => (
+                    <div>
+                      <Button onClick={() => { joinGroup(record);}}>JOIN</Button>
+                    </div>
+                  )}
                 />
               </Table>
             </Col>
@@ -143,9 +145,6 @@ export default (value: any) => {
                 className="lobby-table"
                 dataSource={myGroups}
                 pagination={false}
-                onRow={(group) => ({
-                  onClick: () => { joinGroup(group); }
-              })}
               >
                 <Column
                   title="Name"
@@ -158,6 +157,12 @@ export default (value: any) => {
                   dataIndex="action"
                   key="action"
                   align="center"
+                  render={(text, record) => (
+                    <div>
+                      <Button onClick={() => { joinGroup(record);}}>JOIN</Button>
+                      <Button onClick={() => { leaveGroup(record);}}>LEAVE</Button>
+                    </div>
+                  )}
                 />
               </Table>
               <Row>
