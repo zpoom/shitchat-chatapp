@@ -25,22 +25,32 @@ export default (value: any) => {
   const location = useLocation();
   const [allGroups, setAllGroups] = useState<Array<IGroup>>([]);
   const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
-  const [messages, setMessages] = useState<Array<IMessage>>([]);
+  const [messages, setMessages] = useState<Array<IMessage>>([{ message: 'wtf', sender: 'wtf' }]);
   const [username, setUsername] = useState(location.state);
   const [currentGroup, setCurrentGroup] = useState<String>();
   const [form] = Form.useForm();
+  const [form2] = Form.useForm();
+
+  const addMessage = ({ message, username }: { message: string, username: string }) => {
+    setMessages([ ...messages, { message, sender: username }]);
+  }
+
   useEffect(() => {
     // setMessages(dummyMessage);
     getAllgroup();
     getMygroup();
-    socket.on('msgToClient', (res: any) => {
+  }, []);
+
+  useEffect(() => {
+    socket.off('msgToClient').on('msgToClient', (res: any) => {
       console.log('res', res);
-      setMessages(messages.concat([{ message: res.message, sender: res.username }]));
+      addMessage(res);
     })
-    socket.on('joined', (res: any) => {
+    socket.off('joined').on('joined', (res: any) => {
       console.log(res);
     })
-  }, []);
+  })
+
   const getMygroup = () => {
     axios.get("http://localhost:8080/group/" + username).then((res) => {
       console.log(res);
@@ -172,20 +182,22 @@ export default (value: any) => {
                   )}
                 />
               </Table>
-              <Row>
-                <Col span={20}>
-                  <Form.Item>
-                    <Input size="large" placeholder="Enter your group name" />
-                  </Form.Item>
-                </Col>
-                <Col span={4}>
-                  <Form.Item>
-                    <Button size="large" type="primary" htmlType="submit" block>
-                      SEND
+              <Form onFinish={(group) => joinGroup(group)} form={form2}>
+                <Row>
+                  <Col span={20}>
+                    <Form.Item name="groupname">
+                      <Input size="large" placeholder="Enter your group name" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={4}>
+                    <Form.Item>
+                      <Button size="large" type="primary" htmlType="submit" block onClick={() => joinGroup}>
+                        SEND
                     </Button>
-                  </Form.Item>
-                </Col>
-              </Row>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Form>
             </Col>
           </Row>
         </Col>
