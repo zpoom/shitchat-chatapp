@@ -15,7 +15,6 @@ interface IGroup {
   groupname: String;
   members: [String];
   messages: [{ username: String; timestamp: Date; message: String }];
-  action : String
 }
 interface IMessage {
   message: string;
@@ -39,18 +38,12 @@ export default (value: any) => {
   const getMygroup = () => {
     axios.get("http://localhost:8080/group/" + username).then((res) => {
       console.log(res);
-      res.data.forEach((element: any) => {
-        Object.assign(element,{action : "not join"})
-      });
       setMyGroups(res.data);
     });
   };
   const getAllgroup = () => {
     axios.get("http://localhost:8080/group").then((res) => {
       console.log(res);
-      res.data.forEach((element: any) => {
-        Object.assign(element,{action : "not join"})
-      });
       setAllGroups(res.data);
     });
   };
@@ -67,6 +60,7 @@ export default (value: any) => {
     });
   };
   const joinGroup = (group:any) =>{
+    console.log(group.groupname)
     setCurrentGroup(group.groupname)
     console.log(username)
     socket.emit('join',{username : username , groupname : group.groupname})
@@ -86,6 +80,9 @@ export default (value: any) => {
     });
    
   }
+  const leaveGroup = (group:any) => {
+    socket.emit('leave',{username : username , groupname : group.groupname})
+  }
 
   const createGroup = (value: any) => {
     let form = {
@@ -103,13 +100,6 @@ export default (value: any) => {
         console.log(err);
       });
   };
-  socket.on("msgToClient", function (data: any) {
-    console.log(data);
-  });
-  socket.on("joinde", (data: any)=> {
-    console.log(data);
-  });
-
   return (
     <div>
       <Row className="lobby-title" justify="center">

@@ -10,8 +10,9 @@ export default () => {
   const history = useHistory()
   const socket = io('http://localhost:8080');
   const submitForm = (values: any) => {
+    console.log(values.name)
     var date = new Date();
-    let data = { name: values, latestReadTime: [] };
+    let data = { username: values.name, latestReadTime: [] };
     axios
       .put("http://localhost:8080/user", data)
       .then((res) => {
