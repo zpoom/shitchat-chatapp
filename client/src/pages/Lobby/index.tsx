@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Table, Row, Col, Form, Input, Button, message } from "antd";
 import "./index.css";
 import { dummyGroup, dummyMessage } from "../../const";
@@ -28,11 +28,16 @@ export default (value: any) => {
   const [messages, setMessages] = useState<Array<IMessage>>([{ message: 'wtf', sender: 'wtf' }]);
   const [username, setUsername] = useState(location.state);
   const [currentGroup, setCurrentGroup] = useState<String>();
+  const messagesEndRef = useRef<HTMLDivElement>(document.createElement("div"));
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
 
   const addMessage = ({ message, username }: { message: string, username: string }) => {
     setMessages([...messages, { message, sender: username }]);
+  }
+
+  const scrollToBottom = () => {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   }
 
   useEffect(() => {
@@ -50,6 +55,8 @@ export default (value: any) => {
       console.log(res);
     })
   })
+
+  useEffect(scrollToBottom, [messages]);
 
   const getMygroup = () => {
     axios.get("http://localhost:8080/group/" + username).then((res) => {
@@ -74,6 +81,9 @@ export default (value: any) => {
       message: values.msg,
       groupname: currentGroup,
     });
+    form.setFieldsValue({
+      msg: ''
+    })
   };
   const joinGroup = (group: any) => {
     socket.emit('join', { username: username, groupname: group.groupname })
@@ -210,6 +220,7 @@ export default (value: any) => {
                 </Message>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
           <Form onFinish={sendMessage} form={form}>
             <Row>
