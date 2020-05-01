@@ -12,7 +12,7 @@ interface MessageProps {
 export default ({ children, isMine = true, sender ,time}: MessageProps) => {
     return (
         <Fragment>
-            <p>{sender}</p>
+            <p><strong>{sender}</strong></p>
             <div className={`message-box ${isMine ? 'mine' : ''}`}>
                 {children}
             </div>
