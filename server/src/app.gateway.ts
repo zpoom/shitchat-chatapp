@@ -35,9 +35,8 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     const res = await this.userService.joinGroup({ groupname, username });
     this.activeClients[client.id] = payload;
 
-    // console.log('join active: ', this.activeClients);
-    // const res = `Connected ${username} ${groupname}`;
     this.server.emit('joined', res);
+    // client.broadcast.to(client.id).emit('joined', res);
   }
 
   @SubscribeMessage('leave')
@@ -63,7 +62,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     if (this.activeClients[client.id]) {
       this.userService.temporaryLeaveGroup(this.activeClients[client.id]);
       delete this.activeClients[client.id];
-    } 
+    }
   }
 
   handleConnection(client: Socket, ...args: any[]) {

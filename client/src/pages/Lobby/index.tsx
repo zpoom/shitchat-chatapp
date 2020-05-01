@@ -28,7 +28,7 @@ export default (value: any) => {
   const [myGroups, setMyGroups] = useState<Array<IGroup>>([]);
   const [messages, setMessages] = useState<Array<IMessage>>([]);
   const [username, setUsername] = useState(location.state);
-  const [currentGroup, setCurrentGroup] = useState<String>();
+  const [currentGroup, setCurrentGroup] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(document.createElement("div"));
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
@@ -36,7 +36,6 @@ export default (value: any) => {
   const addMessage = ({ message, username,timestamp }: { message: string, username: string,timestamp:string }) => {
     setMessages([...messages, { message, username: username,timestamp:timestamp }]);
   }
-
   const scrollToBottom = () => {
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   }
@@ -48,12 +47,18 @@ export default (value: any) => {
 
   useEffect(() => {
     socket.off('msgToClient').on('msgToClient', (res: any) => {
-      console.log('res', res);
-      addMessage(res);
+      if (currentGroup === res.groupname) {
+        delete res.groupname;
+        addMessage({ message: res.message, username: res.username, timestamp: res.timestamp });
+      }
     })
     socket.off('joined').on('joined', (res: any) => {
       console.log(res);
-      setMessages(res)
+      if (username === res.username && currentGroup === res.groupname) {
+        delete res.username;
+        delete res.groupname;
+        setMessages(res.messages);
+      }
     })
   })
 
@@ -80,6 +85,7 @@ export default (value: any) => {
     form.setFieldsValue({
       msg: ''
     })
+
   };
   const joinGroup = (group: any) => {
     console.log(group)

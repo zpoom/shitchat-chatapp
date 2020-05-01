@@ -46,7 +46,7 @@ export class UserService {
             await user.save();
             // return [];
         }
-        return group.messages;
+        return { messages: group.messages, groupname, username };
 
     }
     async sendMessage({ groupname, username, message }: any) {
@@ -55,7 +55,7 @@ export class UserService {
         const res = { username, message, timestamp: new Date() }
         group.messages.push(res);
         await group.save();
-        return res;
+        return { ...res, groupname };
     }
 
     async temporaryLeaveGroup({ groupname, username }: any) {
