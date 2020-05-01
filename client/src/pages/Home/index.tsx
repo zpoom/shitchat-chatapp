@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 
 import axios from "axios";
 import io from 'socket.io-client';
+import {apiEndpoint} from '../../const';
 
 export default () => {
   const history = useHistory()
@@ -12,7 +13,7 @@ export default () => {
     var date = new Date();
     let data = { username: values.name, latestReadTime: [] };
     axios
-      .put("http://localhost:8080/user", data)
+      .put( apiEndpoint +  "/user", data)
       .then((res) => {
         console.log(res);
         history.push({

@@ -11,7 +11,7 @@ export class UserService {
     constructor(@InjectModel('User') private User: Model<IUser>, @InjectModel('Group') private Group: Model<IGroup>) { }
 
     async createUser(createUserDto: CreateUserDto): Promise<IUser> {
-        const u = await this.User.findOne({ createUserDto});
+        const u = await this.User.findOne({ createUserDto });
         if (u) return u;
         else {
             const user = new this.User(createUserDto);
@@ -34,18 +34,20 @@ export class UserService {
                     break;
                 }
             }
-            const unreadMessages = group.messages.filter(g => g.timestamp > latestRead);
+            // const unreadMessages = group.messages.filter(g => g.timestamp > latestRead);
             console.log(group);
-            console.log(unreadMessages);
-            return unreadMessages;
+            // console.log(unreadMessages);
+            // return unreadMessages;
         } else {
             // never join
             group.members.push(username);
             user.latestReadTime.push({ groupname, timestamp: new Date() });
             await group.save();
             await user.save();
-            return [];
+            // return [];
         }
+        return group.messages;
+
     }
     async sendMessage({ groupname, username, message }: any) {
         const group = await this.Group.findOne({ groupname: groupname });

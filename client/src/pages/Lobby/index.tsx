@@ -7,7 +7,7 @@ import { useForm } from "antd/lib/form/util";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import io from "socket.io-client";
-
+import {apiEndpoint} from '../../const';
 const { Column } = Table;
 const queryString = require("query-string");
 
@@ -21,7 +21,7 @@ interface IMessage {
   username: string;
   timestamp : string;
 }
-const socket = io("http://localhost:8080", { transports: ['websocket'] });
+const socket = io(apiEndpoint, { transports: ['websocket'] });
 export default (value: any) => {
   const location = useLocation();
   const [allGroups, setAllGroups] = useState<Array<IGroup>>([]);
@@ -60,13 +60,13 @@ export default (value: any) => {
   useEffect(scrollToBottom, [messages]);
 
   const getMygroup = () => {
-    axios.get("http://localhost:8080/group/" + username).then((res) => {
+    axios.get(apiEndpoint+"/group" + username).then((res) => {
       console.log(res);
       setMyGroups(res.data);
     });
   };
   const getAllgroup = () => {
-    axios.get("http://localhost:8080/group").then((res) => {
+    axios.get(apiEndpoint + "/group").then((res) => {
       console.log(res);
       setAllGroups(res.data);
     });
@@ -98,7 +98,7 @@ export default (value: any) => {
       messages: [],
     };
     try {
-      await axios.put("http://localhost:8080/group", groupPayload);
+      await axios.put(apiEndpoint + "/group", groupPayload);
       getAllgroup();
       getMygroup();
     } catch (err) {
