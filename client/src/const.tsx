@@ -13,4 +13,4 @@ export const dummyGroup = [
 
 export const dummyMessage = [{ message: "Hello", sender: "me" }, { message: "Hi", sender: "me" }, { message: "What the fuck", sender: "not mine" }]
 
-export const apiEndpoint = 'http://34.87.115.67:8080'; 
+export const apiEndpoint = 'http://localhost:8080';

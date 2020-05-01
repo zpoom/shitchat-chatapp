@@ -1,0 +1,46 @@
+version: "3.2"
+services:
+  frontend:
+    build: ./client
+    tty: true
+    volumes:
+      - "./client:/usr/src/app"
+    links:
+      - loadbalancer
+    command: ["npm", "run", "start"]
+    ports:
+      - "3000:3000"
+
+  backend1:
+    build: ./server
+    tty: true
+    volumes:
+      - "./server:/usr/src/app"
+    command: ["npm", "start"]
+
+  backend2:
+    build: ./server
+    tty: true
+    volumes:
+      - "./server:/usr/src/app"
+    command: ["npm", "start"]
+
+  backend3:
+    build: ./server
+    tty: true
+    volumes:
+      - "./server:/usr/src/app"
+    command: ["npm", "start"]
+
+  loadbalancer:
+    build: ./load-balancer
+    tty: true
+    links:
+      - backend1
+      - backend2
+      - backend3
+    ports:
+      - "8080:8080"
+
+volumes:
+  backend:
