@@ -14,12 +14,12 @@ const queryString = require("query-string");
 interface IGroup {
   groupname: String;
   members: [String];
-  messages: [{ username: String; timestamp: Date; message: String }];
+  messages: [];
 }
 interface IMessage {
   message: string;
   username: string;
-  timestamp : Date
+  timestamp : string;
 }
 const socket = io("http://localhost:8080", { transports: ['websocket'] });
 export default (value: any) => {
@@ -33,8 +33,8 @@ export default (value: any) => {
   const [form] = Form.useForm();
   const [form2] = Form.useForm();
 
-  const addMessage = ({ message, username,timestamp }: { message: string, username: string,timestamp:Date }) => {
-    setMessages([...messages, { message, username: username,timestamp:timestamp }]);
+  const addMessage = ({ message, username,timestamp }: { message: string, username: string,timestamp:string }) => {
+    setMessages([...messages, { message, username: username,timestamp:timestamp.slice(11,16) }]);
   }
 
   const scrollToBottom = () => {
@@ -42,7 +42,6 @@ export default (value: any) => {
   }
 
   useEffect(() => {
-    // setMessages(dummyMessage);
     getAllgroup();
     getMygroup();
   }, []);
@@ -86,10 +85,8 @@ export default (value: any) => {
     console.log(group)
     socket.emit('join', { username: username, groupname: group.groupname })
     setCurrentGroup(group.groupname);
-    socket.on('joined', (res: any) => {
-      console.log(res);
-    })
   }
+
   const leaveGroup = (group: any) => {
     socket.emit('leave', { username: username, groupname: group.groupname })
   }
@@ -213,7 +210,7 @@ export default (value: any) => {
             </Row>
             {messages.map((m, idx) => (
               <div className={`${m.username === username ? "myMessage" : ""}`}>
-                <Message isMine={m.username === username} key={idx} sender={m.username}>
+                <Message time={m.timestamp}isMine={m.username === username} key={idx} sender={m.username}>
                   {m.message}
                 </Message>
               </div>
