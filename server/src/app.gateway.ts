@@ -40,10 +40,10 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   }
 
   @SubscribeMessage('leave')
-  handleLeaveGroup(client: Socket, payload: any): void {
+  async handleLeaveGroup(client: Socket, payload: any): Promise<void> {
     const { username, groupname } = payload;
     if (!username || !groupname) throw new Error('Missing data')
-    const res = this.userService.leaveGroup({ groupname, username });
+    const res = await this.userService.leaveGroup({ groupname, username });
     this.server.emit('leaved', res);
   }
 
