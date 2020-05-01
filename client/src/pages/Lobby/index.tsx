@@ -7,7 +7,7 @@ import { useForm } from "antd/lib/form/util";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import io from "socket.io-client";
-import {apiEndpoint} from '../../const';
+import { apiEndpoint } from '../../const';
 const { Column } = Table;
 const queryString = require("query-string");
 
@@ -55,18 +55,24 @@ export default (value: any) => {
     })
     socket.off('joined').on('joined', (res: any) => {
       console.log(res);
+      getMygroup();
       if (username === res.username && currentGroup === res.groupname) {
         delete res.username;
         delete res.groupname;
         setMessages(res.messages);
       }
     })
+    socket.off('leaved').on('leaved', (res: any) => {
+      getAllgroup();
+      getMygroup();
+      setMessages([]);
+    })
   })
 
   useEffect(scrollToBottom, [messages]);
 
   const getMygroup = () => {
-    axios.get(apiEndpoint+"/group" + username).then((res) => {
+    axios.get(apiEndpoint + "/group/" + username).then((res) => {
       console.log(res);
       setMyGroups(res.data);
     });
@@ -92,12 +98,10 @@ export default (value: any) => {
     console.log(group)
     socket.emit('join', { username: username, groupname: group.groupname })
     setCurrentGroup(group.groupname);
-    socket.on('joined', (res: any) => {
-      console.log(res);
-    })
   }
   const leaveGroup = (group: any) => {
-    socket.emit('leave', { username: username, groupname: group.groupname })
+    socket.emit('leave', { username: username, groupname: group.groupname });
+    setCurrentGroup('');
   }
 
   const createGroup = async (value: any) => {
