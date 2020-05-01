@@ -34,7 +34,7 @@ export default (value: any) => {
   const [form2] = Form.useForm();
 
   const addMessage = ({ message, username,timestamp }: { message: string, username: string,timestamp:string }) => {
-    setMessages([...messages, { message, username: username,timestamp:timestamp.slice(11,16) }]);
+    setMessages([...messages, { message, username: username,timestamp:timestamp }]);
   }
 
   const scrollToBottom = () => {
@@ -60,7 +60,7 @@ export default (value: any) => {
   useEffect(scrollToBottom, [messages]);
 
   const getMygroup = () => {
-    axios.get(apiEndpoint+"/group" + username).then((res) => {
+    axios.get(apiEndpoint+"/group/" + username).then((res) => {
       console.log(res);
       setMyGroups(res.data);
     });
@@ -210,7 +210,7 @@ export default (value: any) => {
             </Row>
             {messages.map((m, idx) => (
               <div className={`${m.username === username ? "myMessage" : ""}`}>
-                <Message time={m.timestamp}isMine={m.username === username} key={idx} sender={m.username}>
+                <Message time={m.timestamp.slice(11,16)}isMine={m.username === username} key={idx} sender={m.username}>
                   {m.message}
                 </Message>
               </div>
