@@ -25,7 +25,7 @@
     "@nestjs/core": "^7.0.0",
     "@nestjs/mongoose": "^6.4.0",
     "@nestjs/platform-express": "^7.0.7",
-    "@nestjs/platform-socket.io": "^7.0.7",
+    "@nestjs/platform-socket.io": "^9.2.0",
     "@nestjs/websockets": "^7.0.7",
     "client": "0.0.1",
     "create-react-app": "^3.4.1",
